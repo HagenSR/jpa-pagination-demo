@@ -1,0 +1,10 @@
+@if (activePerson$ | async; as person) {
+    <p-card header="{{person.firstName | titlecase}} {{person.lastName | titlecase}}">
+        <p class="m-0">
+            Hire Date: {{person.hireDate | date}}
+        </p>
+        <p class="m-0">
+            Email: {{person.email}}
+        </p>
+    </p-card>
+}

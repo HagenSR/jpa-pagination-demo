@@ -1,0 +1,9 @@
+<app-loading [loadingObservable$]="isLoading$" [errorObservable$]="isError$">
+    @for (person of people$ | async; track person.id) {
+    <app-person-card [personId]="person.id" [edit]="false"></app-person-card>
+    <div class="pb-3"></div>
+    } @empty {
+    <p>There are no items.</p>
+    }
+</app-loading>
+<p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords$ | async" [rowsPerPageOptions]="[10, 20, 30]" />

@@ -1,0 +1,10 @@
+@if ((errorObservable$ | async)?.isError) {
+<span class="ml-25-p">Error</span>
+}
+<div class="content" [ngClass]="{loading: loadingObservable$ | async}">
+    <ng-content></ng-content>
+
+    <div class="blocked">
+        <p-progress-spinner ariaLabel="loading" />
+    </div>
+</div>
