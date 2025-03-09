@@ -5,10 +5,12 @@ import { LoadingComponentComponent } from "../../../util/loading/loading.compone
 import { OperationNames } from '../../../api/generic/operation-names.enum';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { PersonService } from '../../../api/people/people.service';
+import { map, Observable } from 'rxjs';
+import { NotNullPipePipe } from '../../../util/pipes/not-null-pipe.pipe';
 
 @Component({
   selector: 'app-persons-list',
-  imports: [CommonModule, PersonsCardComponent, LoadingComponentComponent, PaginatorModule],
+  imports: [CommonModule, PersonsCardComponent, LoadingComponentComponent, PaginatorModule, NotNullPipePipe],
   templateUrl: './persons-list.component.html',
   styleUrl: './persons-list.component.scss'
 })
@@ -20,15 +22,19 @@ export class PersonsListComponent {
   isError$ = this.personService.personRepository.selectError(OperationNames.GET)
   totalRecords$ = this.personService.personRepository.totalRecords$
 
-  first: number = 0;
-  rows: number = 10;
-
   people$ = this.personService.personRepository.getPage()
+  first$:  Observable<number> = this.personService.personRepository.getPaginationData().pipe(
+    map((page) => {
+      return page.currentPage * page.perPage
+    })
+  );
+  rows$: Observable<number> = this.personService.personRepository.getPaginationData().pipe(
+    map((page) => page.perPage)
+  );;
 
   onPageChange(event: PaginatorState) {
-    this.personService.getPage({ perPage: event.rows!, currentPage: event.page!, total: 0, lastPage: 10 })
-    this.first = event.first!;
-    this.rows = event.rows!;
+    const otherParams = this.personService.latestParams.getValue()
+    this.personService.searchPage({ perPage: event.rows!, currentPage: event.page!, total: 0, lastPage: 0 }, otherParams)
   }
 
 }

@@ -1,4 +1,4 @@
-import { tap } from "rxjs";
+import { BehaviorSubject, tap } from "rxjs";
 import { trackRequestResult } from "@ngneat/elf-requests";
 import { DirectCrudService } from "../direct-crud.service";
 import { HttpParams } from "@angular/common/http";
@@ -13,41 +13,41 @@ export abstract class PaginatedService<T extends Id> extends EntityService<T> {
 
   protected constructor(
     override readonly directCrud: DirectCrudService,
-    private pageinatedRepository: PaginatedRepository<T>) {
+    protected pageinatedRepository: PaginatedRepository<T>) {
     super(directCrud, pageinatedRepository)
   }
 
   sort: string = ""
+  latestParams = new BehaviorSubject({})
 
   // see comment on updatePage for why I skip cache
-  getPage(pageParams: PaginationData<number> ) {
-    const jpaPage = this.convertToJpaPage(pageParams)
-    return this.directCrud.get<Page<T>>(`${this.getBasePath()}`, jpaPage)
+  getPage(pageParams: PaginationData<number>, otherParams: any = {}, optionalPath = '' ) {
+    this.latestParams.next(otherParams)
+    const jpaPage = this.convertToJpaPage(pageParams, otherParams)
+
+    return this.directCrud.get<Page<T>>(`${this.getBasePath(optionalPath)}`, jpaPage)
       .pipe(
         tap((r) => {
         const pageinationData = this.convertToPage(r)
         this.pageinatedRepository.updatePage(pageinationData);
       }),
-        trackRequestResult([this.pageinatedRepository.getStoreName(), OperationNames.GET], { skipCache: true })
+        trackRequestResult([this.pageinatedRepository.getStoreName(), OperationNames.GET, pageParams, otherParams], {skipCache: true})
       ).subscribe()
   }
 
-  getFirstPage() {
-    return this.getPage({ perPage: 10, currentPage: 0, total: 0, lastPage: 10  })
+  getFirstPage(otherParams: any = {}) {
+    return this.getPage({ perPage: 10, currentPage: 0, total: 0, lastPage: 10  }, otherParams)
   }
 
   override post(obj: T) {
-    this.pageinatedRepository.clearPages()
     return super.post(obj);
   }
 
   override put(obj: T) {
-    this.pageinatedRepository.clearPages()
     return super.put(obj)
   }
 
   override delete(idParam: number) {
-    this.pageinatedRepository.clearPages()
     return super.delete(idParam)
   }
 
@@ -63,7 +63,7 @@ export abstract class PaginatedService<T extends Id> extends EntityService<T> {
       return pageData;
   }
 
-  protected convertToJpaPage(page: PaginationData<number>): HttpParams {
+  protected convertToJpaPage(page: PaginationData<number>, other: any): HttpParams {
     var params = new HttpParams()
         .append("page", page.currentPage)
         .append("size", page.perPage)

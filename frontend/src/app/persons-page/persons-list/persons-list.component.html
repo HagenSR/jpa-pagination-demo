@@ -6,4 +6,4 @@
     <p>There are no items.</p>
     }
 </app-loading>
-<p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords$ | async" [rowsPerPageOptions]="[10, 20, 30]" />
+<p-paginator (onPageChange)="onPageChange($event)" [first]="first$ | async | notNullPipe " [rows]="rows$ | async" [totalRecords]="totalRecords$ | async" [rowsPerPageOptions]="[5, 10, 20, 30]" />

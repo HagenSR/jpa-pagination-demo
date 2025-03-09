@@ -19,4 +19,9 @@ public class PeopleController {
     public Page<PersonDto> get(Pageable pageable) {
         return personService.getPeople(pageable);
     }
+
+    @GetMapping("/search")
+    public PageAndSearchResponse<PersonDto> search(SearchCriteria searchCriteria, Pageable pageable) {
+        return personService.searchPeople(searchCriteria, pageable);
+    }
 }

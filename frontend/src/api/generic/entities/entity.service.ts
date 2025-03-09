@@ -56,8 +56,8 @@ export abstract class EntityService<T extends Id> extends SubscriberBaseComponen
       ).subscribe()
   }
 
-  protected getBasePath(id?: string): string {
-    const idPath = id ? `/${id}` : ''
+  protected getBasePath(optionalPath?: string): string {
+    const idPath = optionalPath ? `/${optionalPath}` : ''
     return `${environment.API_URL}/${this.repository.getStoreName()}${idPath}`
   }
 }

@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { deleteAllPages, PaginationData, selectCurrentPageEntities, setPage, updatePaginationData } from "@ngneat/elf-pagination";
+import { deleteAllPages, PaginationData, selectCurrentPageEntities, selectPaginationData, setPage, updatePaginationData } from "@ngneat/elf-pagination";
 import { Id } from "../id.model";
 import { Repository } from "../entities/repository.repository";
 import { upsertEntities } from "@ngneat/elf-entities";
@@ -11,6 +11,10 @@ export class PaginatedRepository<T extends Id> extends Repository<T> {
     // will only select entities that have been set to the current page
     getPage() {
         return this.store.pipe(selectCurrentPageEntities());
+    }
+
+    getPaginationData() {
+        return this.store.pipe(selectPaginationData());
     }
 
     clearPages() {
