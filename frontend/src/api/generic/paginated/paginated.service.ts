@@ -20,18 +20,17 @@ export abstract class PaginatedService<T extends Id> extends EntityService<T> {
   sort: string = ""
   latestParams = new BehaviorSubject({})
 
-  // see comment on updatePage for why I skip cache
   getPage(pageParams: PaginationData<number>, otherParams: any = {}, optionalPath = '' ) {
     this.latestParams.next(otherParams)
     const jpaPage = this.convertToJpaPage(pageParams, otherParams)
 
     return this.directCrud.get<Page<T>>(`${this.getBasePath(optionalPath)}`, jpaPage)
       .pipe(
+        trackRequestResult([this.pageinatedRepository.getStoreName(), OperationNames.GET, JSON.stringify(pageParams), JSON.stringify(otherParams), optionalPath], { cacheResponseData: true }),
         tap((r) => {
-        const pageinationData = this.convertToPage(r)
-        this.pageinatedRepository.updatePage(pageinationData);
-      }),
-        trackRequestResult([this.pageinatedRepository.getStoreName(), OperationNames.GET, pageParams, otherParams], {skipCache: true})
+          const pageinationData = this.convertToPage(r)
+          this.pageinatedRepository.updatePage(pageinationData);
+        }),
       ).subscribe()
   }
 

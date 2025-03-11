@@ -17,37 +17,41 @@ export abstract class SingleEntityService<T> extends SubscriberBaseComponent {
 
   get() {
     return this.directCrud.get<T>(`${this.getBasePath()}`, new HttpParams())
-      .pipe(tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.GET], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.GET], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 
   getById(idParam: number) {
     return this.directCrud.get<T>(this.getBasePath(), new HttpParams().append('id', idParam))
-      .pipe(tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.BY_ID], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.BY_ID], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 
   post(obj: T) {
     return this.directCrud.post<T, T>(this.getBasePath(), obj, new HttpParams())
       .pipe(
-        tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.POST], { skipCache: true })
+        trackRequestResult([this.repository.getStoreName(), OperationNames.POST], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 
   put(obj: T) {
     return this.directCrud.put<T, T>(this.getBasePath(), obj, new HttpParams())
-      .pipe(tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.PUT], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.PUT], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 
   delete(idParam: number) {
     return this.directCrud.delete<T>(this.getBasePath(), new HttpParams().append('id', idParam))
-      .pipe(tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.DELETE], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.DELETE], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 

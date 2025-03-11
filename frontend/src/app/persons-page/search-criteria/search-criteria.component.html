@@ -1,19 +1,19 @@
-<app-loading [loadingObservable$]="operationLoading$" [errorObservable$]="operationError$">
+<app-loading [loadingObservable$]="operationLoading$" [errorObservable$]="operationError$" class="p-1">
     <p-card header="Search">
-        <form [formGroup]="searchForm" class="flex flex-column gap-2">
-            <div>
+        <form [formGroup]="searchForm" class="flex flex-row gap-2">
+            <div class="w-min">
                 <p-iftalabel>
                     <input type="text" pInputText id="firstName" formControlName="firstName" optionLabel="firstName">
                     <label for="firstName">First Name</label>
                 </p-iftalabel>
             </div>
-            <div>
+            <div class="w-min">
                 <p-iftalabel>
                     <input type="text" pInputText id="lastName" formControlName="lastName" optionLabel="lastName">
                     <label for="lastName">Last Name</label>
                 </p-iftalabel>
             </div>
-            <div>
+            <div class="w-min">
                 <p-iftalabel>
                     <input type="text" pInputText id="email" formControlName="email" optionLabel="email">
                     <label for="email">Email</label>

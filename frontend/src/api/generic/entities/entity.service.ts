@@ -19,40 +19,44 @@ export abstract class EntityService<T extends Id> extends SubscriberBaseComponen
   get() {
     // Note: trackRequestResult will provide our store with information on the loading and error state
     // of a request. It will also do some caching logic, which can be a bit annoying as it will stop 
-    // calls from going through.
+    // calls from going through. Cache response data will "forward" this response data to us again
     return this.directCrud.get<T[]>(`${this.getBasePath()}`, new HttpParams())
-      .pipe(tap((r) => this.repository.set(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.GET], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.GET], { cacheResponseData: true }),
+        tap((r) => this.repository.set(r))
       ).subscribe()
   }
 
 
   getById(idParam: number) {
     return this.directCrud.get<T>(this.getBasePath(), new HttpParams().append('id', idParam))
-      .pipe(tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.BY_ID], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.BY_ID], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 
   post(obj: T) {
     return this.directCrud.post<T, T>(this.getBasePath(), obj, new HttpParams())
       .pipe(
-        tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.POST], { skipCache: true })
+        trackRequestResult([this.repository.getStoreName(), OperationNames.POST], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 
   put(obj: T) {
     return this.directCrud.put<T, T>(this.getBasePath(), obj, new HttpParams())
-      .pipe(tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.PUT], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.PUT], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r)),
       ).subscribe()
   }
 
   delete(idParam: number) {
     return this.directCrud.delete<T>(this.getBasePath(idParam.toString()), new HttpParams())
-      .pipe(tap((r) => this.repository.update(r)),
-        trackRequestResult([this.repository.getStoreName(), OperationNames.DELETE], { skipCache: true })
+      .pipe(
+        trackRequestResult([this.repository.getStoreName(), OperationNames.DELETE], { cacheResponseData: true }),
+        tap((r) => this.repository.update(r))
       ).subscribe()
   }
 
